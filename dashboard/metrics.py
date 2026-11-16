@@ -292,3 +292,28 @@ def top10_years_active(engine: sqlalchemy.Engine) -> pd.DataFrame:
         ORDER BY t.revenue DESC, customer
         """,
     )
+
+
+def rep_revenue(engine: sqlalchemy.Engine) -> pd.DataFrame:
+    """Revenue from each sales support rep's customers, full period.
+
+    Rep revenue = revenue (unit_price x quantity, summed) from customers whose
+    support_rep_id is the rep, for employees titled Sales Support Agent.
+    Granularity: one row per rep, largest revenue first, columns `employee_id`,
+    `rep` (first name), `revenue`.
+    """
+    return read_sql(
+        engine,
+        """
+        SELECT e.employee_id,
+               e.first_name AS rep,
+               SUM(il.unit_price * il.quantity) AS revenue
+        FROM invoice_line AS il
+        JOIN invoice AS i ON i.invoice_id = il.invoice_id
+        JOIN customer AS c ON c.customer_id = i.customer_id
+        JOIN employee AS e ON e.employee_id = c.support_rep_id
+        WHERE e.title = 'Sales Support Agent'
+        GROUP BY e.employee_id, e.first_name
+        ORDER BY revenue DESC, rep
+        """,
+    )
