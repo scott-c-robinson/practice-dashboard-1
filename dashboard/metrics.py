@@ -158,3 +158,33 @@ def genre_country_revenue(
         """,
         {"year": year, "limit": limit},
     )
+
+
+def yearly_revenue(engine: sqlalchemy.Engine) -> pd.DataFrame:
+    """Revenue for each calendar year with its change from the prior year.
+
+    Revenue = unit price x quantity over every invoice line, grouped by the
+    invoice's calendar year. change_pct = (this year - prior year) / prior
+    year, as a percentage; the first year has no prior year, so its change is
+    empty (null). 2025 ends 22 Dec, so it is a nearly full year.
+    Granularity: one row per year, oldest first, columns `year`, `revenue`,
+    `change_pct`.
+    """
+    return read_sql(
+        engine,
+        """
+        WITH yearly AS (
+            SELECT CAST(EXTRACT(YEAR FROM i.invoice_date) AS integer) AS year,
+                   SUM(il.unit_price * il.quantity) AS revenue
+            FROM invoice_line AS il
+            JOIN invoice AS i ON i.invoice_id = il.invoice_id
+            GROUP BY 1
+        )
+        SELECT year,
+               revenue,
+               100 * (revenue - LAG(revenue) OVER (ORDER BY year))
+                   / LAG(revenue) OVER (ORDER BY year) AS change_pct
+        FROM yearly
+        ORDER BY year
+        """,
+    )
