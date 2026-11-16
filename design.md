@@ -35,6 +35,11 @@ Numbers in the drawings come from the acceptance criteria in `spec.md`; the
 real headlines are computed from the data. Every screen's caption names the
 metric, the period and the filters.
 
+Screens 2, 3 and 4 also show, under their headline, a caption of the grand
+total and the date range the data covers (for example "Total revenue $2,329,
+2021-01-01 to 2025-12-22", computed from the data), so every screen shows the
+number that ties to Finance.
+
 **Screen 1. Where the money comes from** (questions 1, 2, 3, 10)
 
 ```
@@ -114,14 +119,17 @@ metric, the period and the filters.
 
 The even-split figure is 10 divided by the customer count (10 of 59 = 16.9%).
 
+On the Customers screen, customers are labeled by first and last name (the
+course database is sample data), not "Customer A".
+
 **Screen 4. Sales reps** (questions 8, 9, 10)
 
 ```
  SIDEBAR            Jane's customers bring in the most: $833
  (no filters)       ----------------------------------------------------
-                    [Avg per customer ] [Top per customer ] [Avg customers/rep] [Gap vs Finance]
+                    [Average per customer] [Top per customer ] [Average customers/rep] [Gap vs Finance]
                     [$39.47           ] [Steve $40.01     ] [20               ] [$0.00         ]
-                                        [+$0.54 vs avg  ]
+                                        [+$0.54 vs average]
 
                     Jane's customers bring in $833, Steve's $720    <- Q8, ranked bars
                     Revenue from each rep's customers, full period
@@ -159,8 +167,8 @@ the edge of a full-width chart on a phone-width screen.
   comparison: last year, a target, or the average.
 - Then one section per framed question, in the order the stakeholder's
   decision needs them.
-- Filters sit in the sidebar and apply to the whole screen. Their defaults
-  show the most recent complete period.
+- Filters sit in the sidebar and apply to the whole screen. The year picker
+  on Screen 1 defaults to All years, as `spec.md` says.
 
 ### Choosing a chart
 
@@ -191,6 +199,9 @@ the chart with the team before building it, and add a row here.
 - Averages per customer keep cents ($39.67) whatever their size, so close
   values can be told apart (`kind="cents"`).
 - Bars start at zero.
+- Line axes start at zero.
+- On a short line every point is labeled; otherwise the latest value is
+  labeled.
 
 ### Color
 

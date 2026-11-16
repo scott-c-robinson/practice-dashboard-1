@@ -445,3 +445,14 @@ def finance_check(engine: sqlalchemy.Engine) -> pd.DataFrame:
     table["finance_total"] = finance_total
     table["gap"] = (table["finance_total"] - table["revenue"].astype(float)).round(2)
     return table
+
+
+def invoice_date_range(engine: sqlalchemy.Engine) -> pd.DataFrame:
+    """The first and last invoice dates: the period the revenue figures cover.
+
+    Granularity: one row, columns `first_date` and `last_date`.
+    """
+    return read_sql(
+        engine,
+        "SELECT MIN(invoice_date) AS first_date, MAX(invoice_date) AS last_date FROM invoice",
+    )

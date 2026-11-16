@@ -39,6 +39,22 @@ def fmt(value, kind: str) -> str:
     return _PY[_kind(kind, float(value))].format(float(value))
 
 
+def fmt_signed(value, kind: str) -> str:
+    """Like fmt, with the sign taken from the number: +7.1% or -5.6%, never +-5.6%."""
+    sign = "+" if float(value) >= 0 else "-"
+    return sign + fmt(abs(float(value)), kind)
+
+
+def note(text: str) -> None:
+    """A short caption on its own, such as a footnote under a row of tiles."""
+    st.caption(text.replace("$", r"\$"))
+
+
+def total_caption(total, first, last) -> None:
+    """The grand total and the dates it covers, so every screen shows the number that ties to Finance."""
+    note(f"Total revenue {fmt(total, 'money')}, {pd.Timestamp(first):%Y-%m-%d} to {pd.Timestamp(last):%Y-%m-%d}")
+
+
 def headline(takeaway: str, note: str = "") -> None:
     """A section's headline: the takeaway as a sentence, then what it measures.
 
@@ -57,19 +73,23 @@ def kpi_row(tiles: list[dict]) -> None:
     Each tile is {"label", "value", "kind"} plus, optionally, "delta" (the
     change against the comparison, same kind and precision as the value unless
     "delta_kind" names another, such as "percent" for a change from last year)
-    and "versus" (what it is compared with, such as "vs last year").
+    and "versus" (what it is compared with, such as "vs last year"). An
+    optional "note" is a short caption under the tile.
     """
     for column, tile in zip(st.columns(len(tiles)), tiles):
-        delta = None
+        delta, delta_color = None, "off"  # gray: only a loss is colored (red)
         if tile.get("delta") is not None:
             sign = "+" if float(tile["delta"]) >= 0 else "-"
+            delta_color = "off" if sign == "+" else "red"
             delta_kind = tile.get("delta_kind", tile["kind"])
             basis = tile["value"] if delta_kind == tile["kind"] else tile["delta"]
             precision = _kind(delta_kind, float(basis))
             delta = sign + _PY[precision].format(abs(float(tile["delta"])))
             if tile.get("versus"):
                 delta += f" {tile['versus']}"
-        column.metric(tile["label"], fmt(tile["value"], tile["kind"]), delta)
+        column.metric(tile["label"], fmt(tile["value"], tile["kind"]), delta, delta_color=delta_color)
+        if tile.get("note"):
+            column.caption(tile["note"])
 
 
 def ranked_bar(
@@ -134,6 +154,8 @@ def trend_line(
             showarrow=False, xanchor="left", xshift=8, font={"color": ACCENT, "size": 14},
         )
     fig.update_xaxes(title=None, showgrid=False)
+    if not pd.api.types.is_datetime64_any_dtype(data[date]):  # years kept as text: one tick per year, never 2021.5
+        fig.update_xaxes(type="category")
     fig.update_yaxes(title=None, tickformat=d3, gridcolor="#ECEEF1", rangemode="tozero")
     return _house(fig, height=320)
 
