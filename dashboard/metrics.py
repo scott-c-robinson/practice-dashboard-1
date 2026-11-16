@@ -376,3 +376,37 @@ def breakdown_totals(engine: sqlalchemy.Engine) -> pd.DataFrame:
             "revenue": [rows["revenue"].sum() for rows in breakdowns.values()],
         }
     )
+
+
+def finance_check(engine: sqlalchemy.Engine) -> pd.DataFrame:
+    """The "Check against Finance" table: each breakdown against Finance's total.
+
+    Starts from breakdown_totals (genre, country, year, rep) and adds a fifth
+    row, `invoices`, for the sum of invoice totals itself (one group per
+    invoice). Every row is set beside Finance's total, the sum of invoice
+    totals (2,328.60), all years.
+    Granularity: one row per breakdown, in the order genre, country, year,
+    rep, invoices; columns `breakdown`, `groups`, `revenue` (the breakdown's
+    sum), `finance_total` (sum of invoice totals), `gap` (finance_total minus
+    revenue, rounded to cents).
+    """
+    invoices = read_sql(
+        engine, "SELECT COUNT(*) AS groups, SUM(total) AS revenue FROM invoice"
+    ).iloc[0]
+    finance_total = float(invoices["revenue"])
+    table = pd.concat(
+        [
+            breakdown_totals(engine),
+            pd.DataFrame(
+                {
+                    "breakdown": ["invoices"],
+                    "groups": [int(invoices["groups"])],
+                    "revenue": [finance_total],
+                }
+            ),
+        ],
+        ignore_index=True,
+    )
+    table["finance_total"] = finance_total
+    table["gap"] = (table["finance_total"] - table["revenue"].astype(float)).round(2)
+    return table
