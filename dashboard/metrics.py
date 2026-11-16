@@ -210,3 +210,42 @@ def monthly_revenue(engine: sqlalchemy.Engine) -> pd.DataFrame:
         ORDER BY 1
         """,
     )
+
+
+def top10_customers(engine: sqlalchemy.Engine) -> pd.DataFrame:
+    """The top 10 customers by revenue, ties for 10th place included.
+
+    Revenue = unit price x quantity over every invoice line, added up per
+    customer over the full period. Customers tied for 10th place are all
+    included, so the list can show 11. share_pct is the customer's revenue as
+    a percentage of total revenue from all customers (0 to 100), so the column
+    adds up to the top-10 share.
+    Granularity: one row per customer, largest first, columns `customer_id`,
+    `customer` (first and last name), `revenue`, `share_pct`.
+    """
+    return read_sql(
+        engine,
+        """
+        WITH customer_revenue AS (
+            SELECT c.customer_id,
+                   c.first_name || ' ' || c.last_name AS customer,
+                   SUM(il.unit_price * il.quantity) AS revenue
+            FROM invoice_line AS il
+            JOIN invoice AS i ON i.invoice_id = il.invoice_id
+            JOIN customer AS c ON c.customer_id = i.customer_id
+            GROUP BY c.customer_id, c.first_name, c.last_name
+        ),
+        ranked AS (
+            SELECT customer_id,
+                   customer,
+                   revenue,
+                   100 * revenue / SUM(revenue) OVER () AS share_pct,
+                   RANK() OVER (ORDER BY revenue DESC) AS revenue_rank
+            FROM customer_revenue
+        )
+        SELECT customer_id, customer, revenue, share_pct
+        FROM ranked
+        WHERE revenue_rank <= 10
+        ORDER BY revenue DESC, customer
+        """,
+    )
