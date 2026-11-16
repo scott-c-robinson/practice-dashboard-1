@@ -41,7 +41,120 @@ file. The rules live in code in `dashboard/charts.py` and
 
 ### Screen drawings
 
-<Drawn in the next step.>
+Each headline states its takeaway with a number computed from the data; the
+figures below are the spec's, shown as examples. The caption under each
+headline gives the metric, period and filters.
+
+**Screen 1: Where the money comes from**
+
+```
++-----------------+--------------------------------------------------+
+| SIDEBAR         | Rock and Latin bring in over half our revenue    |
+|                 |                                                  |
+| Year            | [Total revenue] [Top genre share] [Top country   |
+| [ All years v ] |  $2,329          35.5% Rock        share] 22.5% USA|
+|                 |  Jan 2021 - 22 Dec 2025 | ties to Finance, gap 0 |
+|                 |                                                  |
+| (picker changes | Rock earns 35% of revenue                        |
+|  every number   |   Revenue by genre, top 5, selected years        |
+|  on this screen)|   Rock         ################  $827  35.5%     |
+|                 |   Latin        #######           $382  16.4%     |
+|                 |   Metal        #####             $261  11.2%     |
+|                 |   Alt & Punk   #####             $242  10.4%     |
+|                 |   TV Shows     ##                 $94   4.0%     |
+|                 |   > Q1 | ranked horizontal bars                  |
+|                 |                                                  |
+|                 | The USA earns 22% of revenue                     |
+|                 |   Revenue by billing country, top 5             |
+|                 |   USA / Canada / France / Brazil / Germany      |
+|                 |   (same bars and labels as genres)              |
+|                 |   > Q2 | ranked horizontal bars                  |
+|                 |                                                  |
+|                 | USA Rock is our biggest single combination      |
+|                 |   Revenue by country and genre, top 10          |
+|                 |   USA - Rock  ####  $155   Canada - Rock  ###   |
+|                 |   USA - Latin ###   $90    ...                  |
+|                 |   > Q3 | ranked horizontal bars                  |
++-----------------+--------------------------------------------------+
+```
+
+**Screen 2: Growth** (no filters, always the full period)
+
+```
++-----------------+--------------------------------------------------+
+| SIDEBAR         | Revenue is flat: $449 in 2021, $451 in 2025      |
+| (none)          |                                                  |
+|                 | [Total revenue] [Best year]  [Latest year change]|
+|                 |  $2,329          2022 $481    -5.6% (partial yr) |
+|                 |  Jan 2021 - 22 Dec 2025 | ties to Finance, gap 0 |
+|                 |                                                  |
+|                 | Revenue peaked in 2022 and has not grown since   |
+|                 |   Revenue per year                               |
+|                 |   $481 .       .                                 |
+|                 |   $449   .  .     .  .   (% change on points:    |
+|                 |   2021 2022 2023 2024 2025  +7.1% -2.5% +1.7%    |
+|                 |   2025 ends 22 Dec            -5.6%)             |
+|                 |   > Q4 | line                                    |
+|                 |                                                  |
+|                 | Monthly revenue moves in a narrow band           |
+|                 |   Revenue per month, Jan 2021 - Dec 2025         |
+|                 |   (line across 60 months)                        |
+|                 |   > Q5 | line                                    |
++-----------------+--------------------------------------------------+
+```
+
+**Screen 3: Customers** (no filters, always the full period)
+
+```
++-----------------+--------------------------------------------------+
+| SIDEBAR         | No small group carries the business: top 10 = 19%|
+| (none)          |                                                  |
+|                 | [Total revenue] [Top-10 share] [Bought all 5 yrs]|
+|                 |  $2,329          19.4%         2 of 10 customers |
+|                 |  Jan 2021 - 22 Dec 2025 | ties to Finance, gap 0 |
+|                 |                                                  |
+|                 | Our top 10 customers bring in 19% of revenue     |
+|                 |   Revenue by customer, top 10                    |
+|                 |   (ranked horizontal bars, one per customer)     |
+|                 |   > Q6 | ranked bars + Top-10 share tile         |
+|                 |                                                  |
+|                 | Only 2 of our top 10 bought in all five years    |
+|                 |   Years bought, top 10 customers                 |
+|                 |   Customer          | Years bought (of 5)        |
+|                 |   ...               | 5 / 4 / 3                  |
+|                 |   > Q7 | table                                   |
++-----------------+--------------------------------------------------+
+```
+
+**Screen 4: Sales reps** (no filters, always the full period)
+
+```
++-----------------+--------------------------------------------------+
+| SIDEBAR         | Every rep's customers are worth about $39 each   |
+| (none)          |                                                  |
+|                 | [Total revenue] [Total customers] [Avg per cust.]|
+|                 |  $2,329          59               $39.47         |
+|                 |  Jan 2021 - 22 Dec 2025 | ties to Finance, gap 0 |
+|                 |                                                  |
+|                 | Jane's customers bring in the most: $833         |
+|                 |   Revenue from each rep's customers              |
+|                 |   Jane     ################  $833                |
+|                 |   Margaret ###############   $775                |
+|                 |   Steve    ##############    $720                |
+|                 |   > Q8 | ranked horizontal bars                  |
+|                 |                                                  |
+|                 | Each rep's customers are worth about $39 each    |
+|                 |   Rep         | Customers | Revenue per customer |
+|                 |   Jane        | 21        | $39.67               |
+|                 |   Margaret    | 20        | $38.77               |
+|                 |   Steve       | 18        | $40.01               |
+|                 |   > Q9 | table                                   |
+|                 |   (context only; says nothing about cause)       |
++-----------------+--------------------------------------------------+
+```
+
+Question 10 (does it tie out with Finance?) appears on every screen as the
+total tile and its "ties to Finance, gap 0.00" caption.
 
 ---
 
