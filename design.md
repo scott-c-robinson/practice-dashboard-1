@@ -142,6 +142,12 @@ a table with one row per breakdown (by genre, by country, by year, by rep,
 sum of invoice totals), each total beside $2,328.60 and a gap column that
 reads 0.00.
 
+**Back to top** (the floating button on every screen): a small button fixed in
+the bottom-right corner, labeled "Back to top", in the accent color. One click
+returns the page to the top. It stays clear of every tile and the year picker,
+and of the end of the page; while the viewer scrolls it may briefly pass over
+the edge of a full-width chart on a phone-width screen.
+
 ---
 
 ## Style rules
