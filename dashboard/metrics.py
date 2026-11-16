@@ -317,3 +317,37 @@ def rep_revenue(engine: sqlalchemy.Engine) -> pd.DataFrame:
         ORDER BY revenue DESC, rep
         """,
     )
+
+
+def rep_customers(engine: sqlalchemy.Engine) -> pd.DataFrame:
+    """Customers and revenue per customer for each sales support rep, full period.
+
+    Rep customers = count of customers whose support_rep_id is the rep.
+    Revenue per customer = Rep revenue / Rep customers, for employees titled
+    Sales Support Agent.
+    Granularity: one row per rep, most customers first, columns `employee_id`,
+    `rep` (first name), `customers`, `revenue_per_customer`.
+    """
+    return read_sql(
+        engine,
+        """
+        WITH customer_revenue AS (
+            SELECT i.customer_id,
+                   SUM(il.unit_price * il.quantity) AS revenue
+            FROM invoice_line AS il
+            JOIN invoice AS i ON i.invoice_id = il.invoice_id
+            GROUP BY i.customer_id
+        )
+        SELECT e.employee_id,
+               e.first_name AS rep,
+               COUNT(c.customer_id) AS customers,
+               COALESCE(SUM(cr.revenue), 0) / COUNT(c.customer_id)
+                   AS revenue_per_customer
+        FROM employee AS e
+        JOIN customer AS c ON c.support_rep_id = e.employee_id
+        LEFT JOIN customer_revenue AS cr ON cr.customer_id = c.customer_id
+        WHERE e.title = 'Sales Support Agent'
+        GROUP BY e.employee_id, e.first_name
+        ORDER BY customers DESC, rep
+        """,
+    )
